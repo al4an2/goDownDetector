@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"net/http"
@@ -20,8 +21,12 @@ type apiConfig struct {
 
 func main() {
 
+	//start initialization
 	godotenv.Load(".env")
 	portString := os.Getenv("PORT")
+	admin_login := os.Getenv("admin_login")
+	admin_email := os.Getenv("admin_email")
+
 	router := gin.Default()
 
 	dbUrl := os.Getenv("DB_url")
@@ -39,6 +44,9 @@ func main() {
 		DB: db,
 	}
 
+	//create admin
+	apiCfg.createAdmin(admin_login, admin_email, context.TODO())
+	//routing
 	router.GET("/ready", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "ready",

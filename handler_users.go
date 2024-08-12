@@ -37,6 +37,7 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 		UpdatedAt: time.Now().UTC(),
 		Name:      new_user.Name,
 		Email:     new_user.Email,
+		Usertype:  "user",
 	})
 
 	if err != nil {

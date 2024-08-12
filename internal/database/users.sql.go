@@ -13,11 +13,12 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, created_at, updated_at, name, email, api_key)
+INSERT INTO users (id, created_at, updated_at, name, email, api_key, usertype)
 VALUES ($1, $2, $3, $4, $5,
-    encode(sha256(random()::text::bytea), 'hex')
+    encode(sha256(random()::text::bytea), 'hex'),
+    $6
 )
-RETURNING id, created_at, updated_at, name, email, api_key
+RETURNING id, created_at, updated_at, name, email, api_key, usertype
 `
 
 type CreateUserParams struct {
@@ -26,6 +27,7 @@ type CreateUserParams struct {
 	UpdatedAt time.Time
 	Name      string
 	Email     string
+	Usertype  string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -35,6 +37,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.UpdatedAt,
 		arg.Name,
 		arg.Email,
+		arg.Usertype,
 	)
 	var i User
 	err := row.Scan(
@@ -44,12 +47,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Name,
 		&i.Email,
 		&i.ApiKey,
+		&i.Usertype,
 	)
 	return i, err
 }
 
 const gerUserByAPIKey = `-- name: GerUserByAPIKey :one
-SELECT id, created_at, updated_at, name, email, api_key FROM users WHERE api_key = $1
+SELECT id, created_at, updated_at, name, email, api_key, usertype FROM users WHERE api_key = $1
 `
 
 func (q *Queries) GerUserByAPIKey(ctx context.Context, apiKey string) (User, error) {
@@ -62,6 +66,7 @@ func (q *Queries) GerUserByAPIKey(ctx context.Context, apiKey string) (User, err
 		&i.Name,
 		&i.Email,
 		&i.ApiKey,
+		&i.Usertype,
 	)
 	return i, err
 }

@@ -10,6 +10,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type Setup struct {
+	ID        int32
+	Completed bool
+}
+
 type User struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
@@ -17,4 +22,5 @@ type User struct {
 	Name      string
 	Email     string
 	ApiKey    string
+	Usertype  string
 }
