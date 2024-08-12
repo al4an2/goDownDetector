@@ -15,6 +15,15 @@ type Setup struct {
 	Completed bool
 }
 
+type Site struct {
+	ID          uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Name        string
+	Url         string
+	AddedByUser uuid.UUID
+}
+
 type User struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
