@@ -6,5 +6,8 @@ VALUES ($1, $2, $3, $4, $5,
 )
 RETURNING *;
 
--- name: GerUserByAPIKey :one
+-- name: GetUserByAPIKey :one
 SELECT * FROM users WHERE api_key = $1;
+
+-- name: GetAllUsers :many
+SELECT * FROM users;

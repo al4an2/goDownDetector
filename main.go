@@ -62,6 +62,9 @@ func main() {
 	router.POST("/users", func(c *gin.Context) {
 		apiCfg.handlerCreateUser(c)
 	})
+	router.GET("/users", func(c *gin.Context) {
+		apiCfg.handlerGetUser(c)
+	})
 
 	//cheking site-status func
 	router.GET("/site", func(c *gin.Context) {

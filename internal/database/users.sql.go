@@ -52,12 +52,47 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
-const gerUserByAPIKey = `-- name: GerUserByAPIKey :one
+const getAllUsers = `-- name: GetAllUsers :many
+SELECT id, created_at, updated_at, name, email, api_key, usertype FROM users
+`
+
+func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Name,
+			&i.Email,
+			&i.ApiKey,
+			&i.Usertype,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserByAPIKey = `-- name: GetUserByAPIKey :one
 SELECT id, created_at, updated_at, name, email, api_key, usertype FROM users WHERE api_key = $1
 `
 
-func (q *Queries) GerUserByAPIKey(ctx context.Context, apiKey string) (User, error) {
-	row := q.db.QueryRowContext(ctx, gerUserByAPIKey, apiKey)
+func (q *Queries) GetUserByAPIKey(ctx context.Context, apiKey string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByAPIKey, apiKey)
 	var i User
 	err := row.Scan(
 		&i.ID,

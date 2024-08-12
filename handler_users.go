@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/al4an2/goDownDetector/internal/auth"
 	"github.com/al4an2/goDownDetector/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -46,4 +47,20 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, created_user)
+}
+
+func (apiCfg *apiConfig) handlerGetUser(c *gin.Context) {
+
+	apiKey, err := auth.GetAPIKey(c.Request.Header.Get("Authorization"))
+	if err != nil {
+		c.JSON(403, fmt.Sprintf("Auth apiKey is error: %s", err))
+		return
+	}
+
+	user, err := apiCfg.DB.GetUserByAPIKey(c, apiKey)
+	if err != nil {
+		c.JSON(400, fmt.Sprintf("Getting user finish with error: %s", err))
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
