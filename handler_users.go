@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/al4an2/goDownDetector/internal/auth"
 	"github.com/al4an2/goDownDetector/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -19,7 +18,7 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 
 	var new_user user
 	if err := c.ShouldBindJSON(&new_user); err != nil {
-		c.JSON(400, gin.H{"error": fmt.Sprintf("Error parsing JSON: %s", err)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error parsing JSON: %s", err)})
 		return
 	}
 
@@ -42,7 +41,7 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": fmt.Sprintf("Couldn't create user: %s", err)})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Couldn't create user: %s", err)})
 		return
 	}
 
@@ -51,16 +50,39 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 
 func (apiCfg *apiConfig) handlerGetUser(c *gin.Context) {
 
-	apiKey, err := auth.GetAPIKey(c.Request.Header.Get("Authorization"))
-	if err != nil {
-		c.JSON(403, fmt.Sprintf("Auth apiKey is error: %s", err))
-		return
-	}
-
-	user, err := apiCfg.DB.GetUserByAPIKey(c, apiKey)
-	if err != nil {
-		c.JSON(400, fmt.Sprintf("Getting user finish with error: %s", err))
+	user, exist := c.Get("user")
+	if !exist {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found in query Context"})
 		return
 	}
 	c.JSON(http.StatusOK, user)
+}
+
+func (apiCfg *apiConfig) handlerGetAllUsers(c *gin.Context) {
+
+	user, exist := c.Get("user")
+	if !exist {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found in query Context"})
+		return
+	}
+
+	fmt.Println(user)
+
+	userStruct, ok := user.(*database.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cast user from query Context"})
+		return
+	}
+
+	if userStruct.Usertype != "admin" {
+		c.JSON(http.StatusBadRequest, "Getting user finish with error: You are NOT admin!")
+		return
+	}
+
+	users, err := apiCfg.DB.GetAllUsers(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("Couldn't get all users: %s", err))
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }

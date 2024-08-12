@@ -46,7 +46,11 @@ func main() {
 
 	//create admin
 	apiCfg.createAdmin(admin_login, admin_email, context.TODO())
+
 	//routing
+	auth_router := router.Group("")
+	auth_router.Use(apiCfg.middlewareAuth())
+
 	router.GET("/ready", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "ready",
@@ -62,8 +66,11 @@ func main() {
 	router.POST("/users", func(c *gin.Context) {
 		apiCfg.handlerCreateUser(c)
 	})
-	router.GET("/users", func(c *gin.Context) {
+	auth_router.GET("/users", func(c *gin.Context) {
 		apiCfg.handlerGetUser(c)
+	})
+	auth_router.GET("/users/all", func(c *gin.Context) {
+		apiCfg.handlerGetAllUsers(c)
 	})
 
 	//cheking site-status func
