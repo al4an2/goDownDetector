@@ -18,18 +18,18 @@ func (apiCfg *apiConfig) handlerCreateSite(c *gin.Context) {
 
 	userStruct := getUserStruct(c)
 
-	var new_site site
-	if err := c.ShouldBindJSON(&new_site); err != nil {
+	var newSite site
+	if err := c.ShouldBindJSON(&newSite); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error parsing JSON: %s", err)})
 		return
 	}
 
-	created_site, err := apiCfg.DB.CreateSite(c, database.CreateSiteParams{
+	createdSite, err := apiCfg.DB.CreateSite(c, database.CreateSiteParams{
 		ID:          uuid.New(),
 		CreatedAt:   time.Now().UTC(),
 		UpdatedAt:   time.Now().UTC(),
-		Name:        new_site.Name,
-		Url:         new_site.Url,
+		Name:        newSite.Name,
+		Url:         newSite.Url,
 		AddedByUser: userStruct.ID,
 	})
 
@@ -38,7 +38,7 @@ func (apiCfg *apiConfig) handlerCreateSite(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, created_site)
+	c.JSON(http.StatusCreated, createdSite)
 }
 
 func (apiCfg *apiConfig) handlerGetSites(c *gin.Context) {

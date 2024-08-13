@@ -24,6 +24,14 @@ type Site struct {
 	AddedByUser uuid.UUID
 }
 
+type SiteFollow struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    uuid.UUID
+	SiteID    uuid.UUID
+}
+
 type User struct {
 	ID        uuid.UUID
 	CreatedAt time.Time

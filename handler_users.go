@@ -16,27 +16,27 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 		Email string `json:"email" binding:"required,email"`
 	}
 
-	var new_user user
-	if err := c.ShouldBindJSON(&new_user); err != nil {
+	var newUser user
+	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error parsing JSON: %s", err)})
 		return
 	}
 
-	lengthUserName := len(new_user.Name)
+	lengthUserName := len(newUser.Name)
 	if lengthUserName < 1 || lengthUserName > 100 {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": fmt.Sprintf(
 			"User name: %s with length %d isn't allowed size. Username must be between 1 and 100 characters long.",
-			new_user.Name,
+			newUser.Name,
 			lengthUserName)})
 		return
 	}
 
-	created_user, err := apiCfg.DB.CreateUser(c, database.CreateUserParams{
+	createdUser, err := apiCfg.DB.CreateUser(c, database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
-		Name:      new_user.Name,
-		Email:     new_user.Email,
+		Name:      newUser.Name,
+		Email:     newUser.Email,
 		Usertype:  "user",
 	})
 
@@ -45,7 +45,7 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, created_user)
+	c.JSON(http.StatusCreated, createdUser)
 }
 
 func (apiCfg *apiConfig) handlerGetUser(c *gin.Context) {

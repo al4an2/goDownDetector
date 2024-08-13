@@ -88,6 +88,11 @@ func main() {
 		apiCfg.handlerGetAllSitesInfo(c)
 	})
 
+	//site follows routing
+	auth_router.POST("/follows", func(c *gin.Context) {
+		apiCfg.handlerCreateSiteFollow(c)
+	})
+
 	//cheking site-status func
 	router.GET("/site", func(c *gin.Context) {
 		log.Println("The URL:", c.Request.Host+c.Request.URL.Path)
