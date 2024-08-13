@@ -50,3 +50,20 @@ func (apiCfg *apiConfig) handlerGetSites(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, sites)
 }
+
+func (apiCfg *apiConfig) handlerGetMyAddedSites(c *gin.Context) {
+
+	userStruct := getUserStruct(c)
+
+	sites, err := apiCfg.DB.GetMyAddedSites(c.Request.Context(), userStruct.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("The sites you added couldn't be found: %s", err)})
+		return
+	}
+
+	if sites == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The sites you added couldn't be found: You haven't added sites to the system yet. This can be done using the /sites POST request."})
+		return
+	}
+	c.JSON(http.StatusOK, sites)
+}
