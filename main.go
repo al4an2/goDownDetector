@@ -78,6 +78,9 @@ func main() {
 	auth_router.POST("/sites", func(c *gin.Context) {
 		apiCfg.handlerCreateSite(c)
 	})
+	auth_router.GET("/sites", func(c *gin.Context) {
+		apiCfg.handlerGetSites(c)
+	})
 
 	//cheking site-status func
 	router.GET("/site", func(c *gin.Context) {

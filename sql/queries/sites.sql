@@ -4,10 +4,10 @@ VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
 -- name: GetSites :many
-SELECT * from sites;
+SELECT id, created_at, updated_at, name, url from sites;
 
 -- name: GetMyAddedSites :many
 SELECT * from sites where added_by_user = $1;
 
--- name: GetAllSites :many
+-- name: GetAllSitesInfo :many
 SELECT * from sites;

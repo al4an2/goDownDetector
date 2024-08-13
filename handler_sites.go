@@ -40,3 +40,13 @@ func (apiCfg *apiConfig) handlerCreateSite(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, created_site)
 }
+
+func (apiCfg *apiConfig) handlerGetSites(c *gin.Context) {
+
+	sites, err := apiCfg.DB.GetSites(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Couldn't get site's list: %s", err)})
+		return
+	}
+	c.JSON(http.StatusOK, sites)
+}

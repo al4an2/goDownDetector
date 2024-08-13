@@ -48,12 +48,12 @@ func (q *Queries) CreateSite(ctx context.Context, arg CreateSiteParams) (Site, e
 	return i, err
 }
 
-const getAllSites = `-- name: GetAllSites :many
+const getAllSitesInfo = `-- name: GetAllSitesInfo :many
 SELECT id, created_at, updated_at, name, url, added_by_user from sites
 `
 
-func (q *Queries) GetAllSites(ctx context.Context) ([]Site, error) {
-	rows, err := q.db.QueryContext(ctx, getAllSites)
+func (q *Queries) GetAllSitesInfo(ctx context.Context) ([]Site, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSitesInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -117,25 +117,32 @@ func (q *Queries) GetMyAddedSites(ctx context.Context, addedByUser uuid.UUID) ([
 }
 
 const getSites = `-- name: GetSites :many
-SELECT id, created_at, updated_at, name, url, added_by_user from sites
+SELECT id, created_at, updated_at, name, url from sites
 `
 
-func (q *Queries) GetSites(ctx context.Context) ([]Site, error) {
+type GetSitesRow struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Name      string
+	Url       string
+}
+
+func (q *Queries) GetSites(ctx context.Context) ([]GetSitesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getSites)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Site
+	var items []GetSitesRow
 	for rows.Next() {
-		var i Site
+		var i GetSitesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Name,
 			&i.Url,
-			&i.AddedByUser,
 		); err != nil {
 			return nil, err
 		}
