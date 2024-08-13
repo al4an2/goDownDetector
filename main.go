@@ -92,6 +92,12 @@ func main() {
 	auth_router.POST("/follows", func(c *gin.Context) {
 		apiCfg.handlerCreateSiteFollow(c)
 	})
+	auth_router.GET("/follows", func(c *gin.Context) {
+		apiCfg.handlerGetSiteFollows(c)
+	})
+	auth_router.GET("/follows/all", func(c *gin.Context) {
+		apiCfg.handlerGetAllSiteFollows(c)
+	})
 
 	//cheking site-status func
 	router.GET("/site", func(c *gin.Context) {

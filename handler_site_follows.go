@@ -38,3 +38,29 @@ func (apiCfg *apiConfig) handlerCreateSiteFollow(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, createdSiteFollow)
 }
+
+func (apiCfg *apiConfig) handlerGetSiteFollows(c *gin.Context) {
+
+	sites, err := apiCfg.DB.GetSiteFollows(c.Request.Context(), getUserStruct(c).ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Couldn't get you site follows: %s", err)})
+		return
+	}
+	c.JSON(http.StatusOK, sites)
+}
+
+func (apiCfg *apiConfig) handlerGetAllSiteFollows(c *gin.Context) {
+
+	usertype := getUserStruct(c).Usertype
+	if usertype != "admin" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Getting user finish with error: You are NOT admin!"})
+		return
+	}
+
+	sites, err := apiCfg.DB.GetAllSiteFollows(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Haven't any site follows in database or some error on DB request: %s", err)})
+		return
+	}
+	c.JSON(http.StatusOK, sites)
+}
