@@ -67,3 +67,19 @@ func (apiCfg *apiConfig) handlerGetMyAddedSites(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, sites)
 }
+
+func (apiCfg *apiConfig) handlerGetAllSitesInfo(c *gin.Context) {
+
+	usertype := getUserStruct(c).Usertype
+	if usertype != "admin" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Getting user finish with error: You are NOT admin!"})
+		return
+	}
+
+	sites, err := apiCfg.DB.GetAllSitesInfo(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Haven't any site in list or some error on DB request: %s", err)})
+		return
+	}
+	c.JSON(http.StatusOK, sites)
+}

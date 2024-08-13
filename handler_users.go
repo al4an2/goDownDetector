@@ -59,13 +59,13 @@ func (apiCfg *apiConfig) handlerGetAllUsers(c *gin.Context) {
 	userStruct := getUserStruct(c)
 
 	if userStruct.Usertype != "admin" {
-		c.JSON(http.StatusBadRequest, "Getting user finish with error: You are NOT admin!")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Getting user finish with error: You are NOT admin!"})
 		return
 	}
 
 	users, err := apiCfg.DB.GetAllUsers(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("Couldn't get all users: %s", err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Couldn't get all users: %s", err)})
 		return
 	}
 	c.JSON(http.StatusOK, users)

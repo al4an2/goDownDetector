@@ -84,6 +84,9 @@ func main() {
 	auth_router.GET("/sites/my", func(c *gin.Context) {
 		apiCfg.handlerGetMyAddedSites(c)
 	})
+	auth_router.GET("/sites/all", func(c *gin.Context) {
+		apiCfg.handlerGetAllSitesInfo(c)
+	})
 
 	//cheking site-status func
 	router.GET("/site", func(c *gin.Context) {
