@@ -63,6 +63,7 @@ func main() {
 		})
 	})
 
+	//users routing
 	router.POST("/users", func(c *gin.Context) {
 		apiCfg.handlerCreateUser(c)
 	})
@@ -71,6 +72,11 @@ func main() {
 	})
 	auth_router.GET("/users/all", func(c *gin.Context) {
 		apiCfg.handlerGetAllUsers(c)
+	})
+
+	//sites routing
+	auth_router.POST("/sites", func(c *gin.Context) {
+		apiCfg.handlerCreateSite(c)
 	})
 
 	//cheking site-status func

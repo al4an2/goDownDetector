@@ -50,29 +50,13 @@ func (apiCfg *apiConfig) handlerCreateUser(c *gin.Context) {
 
 func (apiCfg *apiConfig) handlerGetUser(c *gin.Context) {
 
-	user, exist := c.Get("user")
-	if !exist {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found in query Context"})
-		return
-	}
-	c.JSON(http.StatusOK, user)
+	userStruct := getUserStruct(c)
+	c.JSON(http.StatusOK, userStruct)
 }
 
 func (apiCfg *apiConfig) handlerGetAllUsers(c *gin.Context) {
 
-	user, exist := c.Get("user")
-	if !exist {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found in query Context"})
-		return
-	}
-
-	fmt.Println(user)
-
-	userStruct, ok := user.(*database.User)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cast user from query Context"})
-		return
-	}
+	userStruct := getUserStruct(c)
 
 	if userStruct.Usertype != "admin" {
 		c.JSON(http.StatusBadRequest, "Getting user finish with error: You are NOT admin!")
